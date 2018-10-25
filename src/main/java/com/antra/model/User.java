@@ -1,19 +1,21 @@
 package com.antra.model;
 
-public class User {
+import java.io.Serializable;
 
-	private long id;
+public class User implements Serializable{
+
+	private Long id;
     
     private String name;
      
-    private int age;
+    private Integer age;
      
-    private double salary;
+    private Double salary;
 
     public User() {
-    	id=0;
+    	
     }
-	public User(long id, String name, int age, double salary) {
+	public User(Long id, String name, Integer age, Double salary) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -21,11 +23,11 @@ public class User {
 		this.salary = salary;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -37,19 +39,19 @@ public class User {
 		this.name = name;
 	}
 
-	public int getAge() {
+	public Integer getAge() {
 		return age;
 	}
 
-	public void setAge(int age) {
+	public void setAge(Integer age) {
 		this.age = age;
 	}
 
-	public double getSalary() {
+	public Double getSalary() {
 		return salary;
 	}
 
-	public void setSalary(double salary) {
+	public void setSalary(Double salary) {
 		this.salary = salary;
 	}
     

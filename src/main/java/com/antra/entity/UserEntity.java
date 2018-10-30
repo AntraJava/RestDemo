@@ -11,6 +11,17 @@ import javax.persistence.Table;
 @Table(name="user")
 public class UserEntity {
 
+	public UserEntity() {
+		
+	}
+	public UserEntity(Long id, String name, Integer age, Double salary) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.age = age;
+		this.salary = salary;
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id", updatable = false, nullable = false)
@@ -24,16 +35,6 @@ public class UserEntity {
     
     @Column(name = "salary")
     private Double salary;
-
-	public UserEntity() {
-	}
-
-	public UserEntity(Long id, String name, Integer age, Double salary) {
-		this.id = id;
-		this.name = name;
-		this.age = age;
-		this.salary = salary;
-	}
 
 	public Long getId() {
 		return id;

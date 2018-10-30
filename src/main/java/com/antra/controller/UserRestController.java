@@ -2,11 +2,14 @@ package com.antra.controller;
 
 import java.util.List;
 
-import org.apache.tomcat.util.http.parser.MediaType;
+import javax.validation.Valid;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+
 import com.antra.model.User;
 import com.antra.service.UserService;
-import com.antra.util.CustomErrorType;
+import com.antra.util.ErrorResponse;
+import com.antra.util.UserException;
 
 @RestController
 @RequestMapping("/api")
@@ -25,42 +30,43 @@ public class UserRestController {
 	@Autowired
 	UserService userService;
 
-	
-	/** retrives all users **/
+	/**
+	 * retrives all users
+	 * 
+	 * @throws UserException
+	 **/
 	@RequestMapping(value = "/user/", method = RequestMethod.GET)
-	public ResponseEntity<List<User>> listAllUsers() {
+	public ResponseEntity<List<User>> listAllUsers() throws UserException {
 		List<User> users = userService.findAllUsers();
 		if (users.isEmpty()) {
-			return new ResponseEntity(HttpStatus.NO_CONTENT);
+
+			throw new UserException("no users available");
+			// return new ResponseEntity(HttpStatus.NO_CONTENT);
 			// You many decide to return HttpStatus.NOT_FOUND
 		}
 		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
 	}
 
-	
-	/** retrives single user **/
+	/**
+	 * retrives single user
+	 * 
+	 * @throws UserException
+	 **/
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
-	public ResponseEntity<?> getUser(@PathVariable("id") long id) {
+	public ResponseEntity<?> getUser(@PathVariable("id") long id) throws UserException {
 
 		User user = userService.findById(id);
 		if (user == null) {
 
-			return new ResponseEntity(new CustomErrorType("User with id " + id + " not found"), HttpStatus.NOT_FOUND);
+			throw new UserException("user id with " + id + " not found");
 		}
 		return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
 
-	
 	/** create a user **/
-	@RequestMapping(value = "/user/", method = RequestMethod.POST )
-	public ResponseEntity<?> createUser(@RequestBody User user, UriComponentsBuilder ucBuilder) {
+	@RequestMapping(value = "/user/", method = RequestMethod.POST, consumes = "application/json")
+	public ResponseEntity<?> createUser(@Valid @RequestBody User user, UriComponentsBuilder ucBuilder) {
 
-		/*if (userService.isUserExist(user)) {
-
-			return new ResponseEntity(
-					new CustomErrorType("Unable to create. A User with name " + user.getName() + " already exist."),
-					HttpStatus.CONFLICT);
-		}*/
 		userService.saveUser(user);
 
 		HttpHeaders headers = new HttpHeaders();
@@ -68,17 +74,20 @@ public class UserRestController {
 		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
 	}
 
-	
-	/* update a user */
+	/**
+	 * update a user
+	 * 
+	 * @throws UserException
+	 **/
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody User user) {
+	public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody User user) throws UserException {
 
 		User currentUser = userService.findById(id);
 
 		if (currentUser == null) {
 
-			return new ResponseEntity(new CustomErrorType("Unable to upate. User with id " + id + " not found."),
-					HttpStatus.NOT_FOUND);
+			throw new UserException("Unable to upate. User with id " + id + " not found.");
+			
 		}
 
 		currentUser.setName(user.getName());
@@ -89,26 +98,29 @@ public class UserRestController {
 		return new ResponseEntity<User>(currentUser, HttpStatus.OK);
 	}
 
-	
-	/** delete a user **/
+	/**
+	 * delete a user
+	 * 
+	 * @throws UserException
+	 **/
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteUser(@PathVariable("id") long id) {
+	public ResponseEntity<?> deleteUser(@PathVariable("id") long id) throws UserException {
 
 		User user = userService.findById(id);
 		if (user == null) {
-			return new ResponseEntity(new CustomErrorType("Unable to delete. User with id " + id + " not found."),
-					HttpStatus.NOT_FOUND);
+			
+			throw new UserException("Unable to delete. User with id \" + id + \" not found.");
 		}
 		userService.deleteUserById(id);
 		return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
 	}
 
-	
-	/** delete all users **/
-	@RequestMapping(value = "/user/", method = RequestMethod.DELETE)
-	public ResponseEntity<User> deleteAllUsers() {
-
-		userService.deleteAllUsers();
-		return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
+	@ExceptionHandler(UserException.class)
+	public ResponseEntity<ErrorResponse> exceptionHandler(Exception ex) {
+		ErrorResponse error = new ErrorResponse();
+		error.setErrorCode(HttpStatus.PRECONDITION_FAILED.value());
+		error.setMessage(ex.getMessage());
+		return new ResponseEntity<ErrorResponse>(error, HttpStatus.OK);
 	}
+
 }

@@ -1,15 +1,25 @@
 package com.antra.testClient;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
+import com.antra.*;
 
-import com.antra.model.User;
 
+
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class SpringBootRestTestClient {
 
 	//public static final String REST_SERVICE_URI = "http://localhost:8009/api";
@@ -19,8 +29,6 @@ public class SpringBootRestTestClient {
     
     @BeforeClass
     public static void init() {
-   /* RestAssured.baseURI = "http://localhost";
-    RestAssured.port = 8081;*/
     	REST_SERVICE_URI="http://localhost:8009/api";
             }
 
@@ -33,6 +41,7 @@ public class SpringBootRestTestClient {
           
         if(usersMap!=null){
             for(LinkedHashMap<String, Object> map : usersMap){
+            	
                 System.out.println("User : id="+map.get("id")+", Name="+map.get("name")+", Age="+map.get("age")+", Salary="+map.get("salary"));;
             }
         }else{

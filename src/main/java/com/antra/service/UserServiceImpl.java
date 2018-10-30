@@ -14,62 +14,57 @@ import org.springframework.stereotype.Service;
 import com.antra.model.User;
 
 @Service("userService")
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepo;
+	@Autowired
+	private UserRepository userRepo;
 
-    public List<User> findAllUsers() {
-        List<UserEntity> users =  userRepo.findAll();
-        return users.stream().map(e -> new User(e.getId(),e.getName(),e.getAge(),e.getSalary())).collect(Collectors.toList());
-    }
-     
-    public User findById(long id) {
-//        for(User user : users){
-//            if(user.getId() == id){
-//                return user;
-//            }
-//        }
-        return null;
-    }
-     
-    public User findByName(String name) {
-//        for(User user : users){
-//            if(user.getName().equalsIgnoreCase(name)){
-//                return user;
-//            }
-//        }
-        return null;
-    }
-     
-    public void saveUser(User user) {
+	public List<User> findAllUsers() {
+		List<UserEntity> users = userRepo.findAll();
+		/*
+		 * ArrayList al=new ArrayList();
+		 * 
+		 * for(int i=0;i<users.size();i++) { User user=new User(); UserEntity
+		 * userEntity=(UserEntity)users.get(i); user.setId(userEntity.getId());
+		 * user.setName(userEntity.getName()); user.setAge(userEntity.getAge());
+		 * user.setSalary(userEntity.getSalary()); al.add(user); } return al;
+		 */
 
-    	userRepo.save(new UserEntity(user.getId(),user.getName(),user.getAge(),user.getSalary()));
-       /* user.setId(counter.incrementAndGet());
-        users.add(user);*/
-    }
- 
-    public void updateUser(User user) {
-//        int index = users.indexOf(user);
-//        users.set(index, user);
-    }
- 
-    public void deleteUserById(long id) {
-         
-//        for (Iterator<User> iterator = users.iterator(); iterator.hasNext(); ) {
-//            User user = iterator.next();
-//            if (user.getId() == id) {
-//                iterator.remove();
-//            }
-//        }
-    }
- 
-    public boolean isUserExist(User user) {
-        return findByName(user.getName())!=null;
-    }
-     
-    public void deleteAllUsers(){
-//        users.clear();
-    }
+		return users.stream().map(e -> new User(e.getId(), e.getName(), e.getAge(), e.getSalary()))
+				.collect(Collectors.toList());
+	}
+
+	public User findById(long id) {
+
+		UserEntity userEntity = userRepo.findOne(id);
+
+		if (userEntity != null) {
+			User user = new User();
+			user.setId(userEntity.getId());
+			user.setName(userEntity.getName());
+			user.setAge(userEntity.getAge());
+			user.setSalary(userEntity.getSalary());
+			return user;
+		} else {
+			return null;
+		}
+
+	}
+
+	public void saveUser(User user) {
+
+		userRepo.save(new UserEntity(user.getId(), user.getName(), user.getAge(), user.getSalary()));
+	}
+
+	public void updateUser(User user) {
+
+		userRepo.saveAndFlush(new UserEntity(user.getId(), user.getName(), user.getAge(), user.getSalary()));
+
+	}
+
+	public void deleteUserById(long id) {
+
+		userRepo.delete(id);
+	}
 
 }

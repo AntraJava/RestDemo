@@ -2,8 +2,13 @@ package com.antra.model;
 
 import java.io.Serializable;
 
-public class User implements Serializable{
+import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@XmlRootElement
+public class User{
+	
 	private Long id;
     
     private String name;

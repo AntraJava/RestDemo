@@ -7,8 +7,6 @@ import com.antra.model.User;
 public interface UserService {
 
 		User findById(long id);
-     
-	    User findByName(String name);
 	     
 	    void saveUser(User user);
 	     
@@ -16,9 +14,7 @@ public interface UserService {
 	     
 	    void deleteUserById(long id);
 	 
-	    List<User> findAllUsers();
+	    List<User> findAllUsers();   
 	     
-	    void deleteAllUsers();
-	     
-	    boolean isUserExist(User user);
+	    
 }

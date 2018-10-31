@@ -14,4 +14,4 @@
 
 
 ## Contributor
-[Manas](manas.gampa@antra.com)
+[Manas](mailto:manas.gampa@antra.com)

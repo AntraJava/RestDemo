@@ -1,47 +1,43 @@
 package com.antra.testClient;
 
+import static io.restassured.RestAssured.get;
+import static io.restassured.RestAssured.when;
 import static org.junit.Assert.assertEquals;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.antra.UserRestStarter;
+import com.antra.model.User;
+import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
-import com.antra.*;
-
-
-
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = RANDOM_PORT)
 public class SpringBootRestTestClient {
 
-	//public static final String REST_SERVICE_URI = "http://localhost:8009/api";
-	public static String REST_SERVICE_URI;
-    /* GET */
-    @SuppressWarnings("unchecked")
-    
-    @BeforeClass
-    public static void init() {
-    	REST_SERVICE_URI="http://localhost:8009/api";
-            }
+    @Value("http://localhost:${local.server.port}/api")
+    private String REST_SERVICE_URI ;
 
     @Test
     public void listAllUsers(){
         System.out.println("Testing listAllUsers API-----------");
-          
+
         RestTemplate restTemplate = new RestTemplate();
         List<LinkedHashMap<String, Object>> usersMap = restTemplate.getForObject(REST_SERVICE_URI+"/user/", List.class);
-          
+
         if(usersMap!=null){
             for(LinkedHashMap<String, Object> map : usersMap){
-            	
+
                 System.out.println("User : id="+map.get("id")+", Name="+map.get("name")+", Age="+map.get("age")+", Salary="+map.get("salary"));;
             }
         }else{
@@ -49,14 +45,16 @@ public class SpringBootRestTestClient {
         }
     }
       
-   /* @Test 
+    @Test
     public void getUser(){
-        System.out.println("Testing getUser API----------");
-        RestTemplate restTemplate = new RestTemplate();
-        User user = restTemplate.getForObject(REST_SERVICE_URI+"/user/1", User.class);
-        System.out.println(user);
+        when().
+                get(REST_SERVICE_URI + "/user/1").
+        then().assertThat()
+                .statusCode(200)
+                .body("id", Matchers.notNullValue())
+                .body("name",Matchers.equalTo("david"));
     }
-      
+      /*
      @Test
      public void createUser() {
         System.out.println("Testing create User API----------");

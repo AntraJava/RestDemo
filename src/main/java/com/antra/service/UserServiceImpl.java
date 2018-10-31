@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 import com.antra.dao.UserRepository;
 import com.antra.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.antra.model.User;
@@ -63,8 +66,21 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public void deleteUserById(long id) {
-
+		//userRepo.findAll(new PageRequest(1,2));
 		userRepo.delete(id);
 	}
 
+	public List findPaginated(int page, int size, String orderBy) {
+
+		Sort sort = null;
+		if (orderBy != null) {
+			sort = new Sort(Sort.Direction.ASC, orderBy);
+		}
+		Page<UserEntity> page1 = userRepo.findAll(new PageRequest(page, size, sort));
+		List<UserEntity> list = page1.getContent();
+
+		return list.stream().map(e -> new User(e.getId(), e.getName(), e.getAge(), e.getSalary()))
+				.collect(Collectors.toList());
+
+	}
 }

@@ -18,6 +18,8 @@ import com.antra.service.UserService;
 import com.antra.util.ErrorResponse;
 import com.antra.util.UserException;
 
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 @RequestMapping("/api")
 public class UserRestController {
@@ -30,6 +32,7 @@ public class UserRestController {
 	 * 
 	 * @throws UserException
 	 **/
+	@ApiOperation(value="gets all the users")
 	@RequestMapping(value = "/user/", method = RequestMethod.GET)
 	public ResponseEntity<List<User>> listAllUsers() throws UserException {
 		List<User> users = userService.findAllUsers();
@@ -47,6 +50,7 @@ public class UserRestController {
 	 * 
 	 * @throws UserException
 	 **/
+	@ApiOperation(value="gets a single user")
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
 	public ResponseEntity<?> getUser(@PathVariable("id") long id) throws UserException {
 
@@ -59,6 +63,7 @@ public class UserRestController {
 	}
 
 	/** create a user **/
+	@ApiOperation(value="create a user")
 	@RequestMapping(value = "/user/", method = RequestMethod.POST, consumes = "application/json")
 	public ResponseEntity<?> createUser(@Valid @RequestBody User user, UriComponentsBuilder ucBuilder) {
 
@@ -74,6 +79,7 @@ public class UserRestController {
 	 * 
 	 * @throws UserException
 	 **/
+	@ApiOperation(value="update a user")
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody User user) throws UserException {
 
@@ -98,6 +104,7 @@ public class UserRestController {
 	 * 
 	 * @throws UserException
 	 **/
+	@ApiOperation(value="delete a user")
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteUser(@PathVariable("id") long id) throws UserException {
 

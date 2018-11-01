@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/api")
+@Api(value = "User", description = "REST API for Users", tags={"User"})
 public class UserRestController {
 
 	@Autowired
@@ -33,7 +35,7 @@ public class UserRestController {
 	 * @throws UserException
 	 **/
 	@ApiOperation(value = "gets all the users")
-	@RequestMapping(value = "/user/", method = RequestMethod.GET)
+	@RequestMapping(value = "/user", method = RequestMethod.GET)
 	public ResponseEntity<List<User>> listAllUsers() throws UserException {
 		List<User> users = userService.findAllUsers();
 		if (users.isEmpty()) {
@@ -134,7 +136,7 @@ public class UserRestController {
 		ErrorResponse error = new ErrorResponse();
 		error.setErrorCode(HttpStatus.PRECONDITION_FAILED.value());
 		error.setMessage(ex.getMessage());
-		return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }

@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
 		userRepo.delete(id);
 	}
 
-	public List findPaginated(int page, int size, String orderBy) {
+	public List<User> findPaginated(int page, int size, String orderBy) {
 
 		Sort sort = null;
 		if (orderBy != null) {

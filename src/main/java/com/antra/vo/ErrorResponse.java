@@ -1,4 +1,4 @@
-package com.antra.util;
+package com.antra.vo;
 
 public class ErrorResponse {
 

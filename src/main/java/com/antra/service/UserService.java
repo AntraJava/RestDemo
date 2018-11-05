@@ -2,23 +2,22 @@ package com.antra.service;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-
-import com.antra.model.User;
+import com.antra.vo.PagedResponse;
+import com.antra.vo.User;
 
 public interface UserService {
 
 		User findById(long id);
-	     
-	    void saveUser(User user);
-	     
-	    void updateUser(User user);
-	     
-	    void deleteUserById(long id);
+
+		User saveUser(User user);
+
+		User updateUser(User user);
+
+		void deleteUserById(long id);
 	 
-	    List<User> findAllUsers();   
-	    
-	    List<User> findPaginated(int page, int size, String orderBy);
+	    List<User> findAllUsers();
+
+		PagedResponse<User> findPaginated(int page, int size, String orderBy);
 	     
 	    
 }

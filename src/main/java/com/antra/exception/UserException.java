@@ -1,6 +1,6 @@
-package com.antra.util;
+package com.antra.exception;
 
-public class UserException extends Exception {
+public abstract class UserException extends RuntimeException {
 
 	private String errorMessage;
 

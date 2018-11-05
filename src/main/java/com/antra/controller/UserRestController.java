@@ -5,7 +5,13 @@ import java.util.List;
 import javax.validation.Valid;
 
 
+import com.antra.exception.UserNotFoundException;
+import com.antra.util.Constants;
+import com.antra.vo.PagedResponse;
+import com.antra.vo.ResponseMessage;
 import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,10 +20,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 
-import com.antra.model.User;
+import com.antra.vo.User;
 import com.antra.service.UserService;
-import com.antra.util.ErrorResponse;
-import com.antra.util.UserException;
+import com.antra.vo.ErrorResponse;
+import com.antra.exception.UserException;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -26,71 +32,69 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "User", description = "REST API for Users", tags={"User"})
 public class UserRestController {
 
+	private static Logger logger = LoggerFactory.getLogger(UserRestController.class);
+
 	@Autowired
 	UserService userService;
 
-	/**
-	 * retrives all users
-	 * 
-	 * @throws UserException
-	 **/
-	@ApiOperation(value = "gets all the users")
-	@RequestMapping(value = "/user", method = RequestMethod.GET)
-	public ResponseEntity<List<User>> listAllUsers() throws UserException {
-		List<User> users = userService.findAllUsers();
-		if (users.isEmpty()) {
-
-			throw new UserException("no users available");
-			// return new ResponseEntity(HttpStatus.NO_CONTENT);
-			// You many decide to return HttpStatus.NOT_FOUND
-		}
-		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
-	}
+	@Autowired
+	Constants messages;
 
 	/**
 	 * retrives single user
 	 * 
-	 * @throws UserException
 	 **/
 	@ApiOperation(value = "gets a single user")
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
-	public ResponseEntity<?> getUser(@PathVariable("id") long id) throws UserException {
-
+	public ResponseEntity<User> getUser(@PathVariable("id") long id) throws UserException {
 		User user = userService.findById(id);
 		if (user == null) {
-
-			throw new UserException("user id with " + id + " not found");
+			throw new UserNotFoundException(messages.getMessage("USER_NOT_FOUND"));
 		}
 		return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
 
+	//http://localhost:8009/swagger-ui.html#/
+	/**
+	 *  Get user by using pagination, if no parameters are provided, the first page with 10 records will be returned
+	 *
+	 * */
+	@ApiOperation(value = "get users accordingly")
+	@RequestMapping(value = "/user",  method = RequestMethod.GET)
+	public ResponseEntity<PagedResponse<User>> getUserPagenation(@RequestParam(required = false, defaultValue = "0") Integer pageNo,
+														   @RequestParam(required = false, defaultValue = "5") Integer rows,
+														   @RequestParam(required = false, defaultValue = "name") String orderBy) {
+
+		PagedResponse<User> users = userService.findPaginated(pageNo, rows, orderBy);
+		if (users.isEmpty()) {
+			throw new UserNotFoundException(messages.getMessage("USER_NOT_FOUND"));
+		}
+		return new ResponseEntity<PagedResponse<User>>(users, HttpStatus.OK);
+
+	}
+
 	/** create a user **/
 	@ApiOperation(value = "create a user")
-	@RequestMapping(value = "/user/", method = RequestMethod.POST, consumes = "application/json")
-	public ResponseEntity<?> createUser(@Valid @RequestBody User user, UriComponentsBuilder ucBuilder) {
-
-		userService.saveUser(user);
-
+	@RequestMapping(value = "/user", method = RequestMethod.POST, consumes = "application/json")
+	public ResponseEntity<ResponseMessage> createUser(@Valid @RequestBody User user, UriComponentsBuilder ucBuilder) {
+		User savedUser = userService.saveUser(user);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(ucBuilder.path("/api/user/{id}").buildAndExpand(user.getId()).toUri());
-		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+		return new ResponseEntity<ResponseMessage>(new ResponseMessage(messages.getMessage("USER_CREATED"),savedUser), headers, HttpStatus.CREATED);
 	}
 
 	/**
 	 * update a user
 	 * 
-	 * @throws UserException
 	 **/
 	@ApiOperation(value = "update a user")
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody User user) throws UserException {
+	public ResponseEntity<User> updateUser(@PathVariable("id") long id, @RequestBody User user){
 
 		User currentUser = userService.findById(id);
 
 		if (currentUser == null) {
-
-			throw new UserException("Unable to upate. User with id " + id + " not found.");
-
+			throw new UserNotFoundException(messages.getMessage("USER_NOT_FOUND"));
 		}
 
 		currentUser.setName(user.getName());
@@ -108,35 +112,29 @@ public class UserRestController {
 	 **/
 	@ApiOperation(value = "delete a user")
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteUser(@PathVariable("id") long id) throws UserException {
-
+	public ResponseEntity<ResponseMessage> deleteUser(@PathVariable("id") long id) {
 		User user = userService.findById(id);
 		if (user == null) {
-
-			throw new UserException("Unable to delete. User with id \" + id + \" not found.");
+			throw new UserNotFoundException(messages.getMessage("USER_NOT_FOUND"));
 		}
 		userService.deleteUserById(id);
-		return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
+		return new ResponseEntity<ResponseMessage>(new ResponseMessage(messages.getMessage("USER_DELETED"),user), HttpStatus.OK);
 	}
 
-	//http://localhost:8009/swagger-ui.html#/
-	/*pagenation user */
-	@ApiOperation(value = "get users accordingly")
-	@RequestMapping(value = "/user/pagenation", params = { "pageNo", "rows", "orderBy" }, method = RequestMethod.GET)
-	public ResponseEntity<?> getUserPagenation(@RequestParam("pageNo") int pageNo, @RequestParam("rows") int rows,
-			@RequestParam("orderBy") String orderBy) {
-
-		List li = userService.findPaginated(pageNo, rows, orderBy);
-		return new ResponseEntity<List<User>>(li, HttpStatus.OK);
-
-	}
-
-	@ExceptionHandler(UserException.class)
+	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> exceptionHandler(Exception ex) {
 		ErrorResponse error = new ErrorResponse();
-		error.setErrorCode(HttpStatus.PRECONDITION_FAILED.value());
+		error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		error.setMessage(ex.getMessage());
+		logger.error("Controller Error",ex);
 		return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<ErrorResponse> exceptionHandlerUserNotFound(Exception ex) {
+		ErrorResponse error = new ErrorResponse();
+		error.setErrorCode(HttpStatus.NOT_FOUND.value());
+		error.setMessage(ex.getMessage());
+		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+	}
 }

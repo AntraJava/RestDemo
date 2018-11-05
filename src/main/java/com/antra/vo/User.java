@@ -2,6 +2,7 @@ package com.antra.vo;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 @XmlRootElement
 public class User{
@@ -57,6 +58,5 @@ public class User{
 	public void setSalary(Double salary) {
 		this.salary = salary;
 	}
-    
-    
+
 }

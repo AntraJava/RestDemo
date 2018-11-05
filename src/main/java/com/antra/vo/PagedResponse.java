@@ -7,6 +7,7 @@ public class PagedResponse<T> {
     private int rows;
     private int totalPage;
     private long totalElement;
+    private String order;
     private List<T> body;
 
     public boolean isEmpty(){
@@ -43,6 +44,14 @@ public class PagedResponse<T> {
 
     public void setTotalElement(long totalElement) {
         this.totalElement = totalElement;
+    }
+
+    public String getOrder() {
+        return order;
+    }
+
+    public void setOrder(String order) {
+        this.order = order;
     }
 
     public List<T> getBody() {

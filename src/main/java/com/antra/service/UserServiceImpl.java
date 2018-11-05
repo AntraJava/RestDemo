@@ -69,6 +69,7 @@ public class UserServiceImpl implements UserService {
 		result.setRows(page1.getSize());
 		result.setTotalPage(page1.getTotalPages());
 		result.setTotalElement(page1.getTotalElements());
+		result.setOrder(page1.getSort().toString());
 		result.setBody(list.stream().map(e -> new User(e.getId(), e.getName(), e.getAge(), e.getSalary()))
 				.collect(Collectors.toList()));
 		return result;

@@ -34,12 +34,17 @@ public class UserRestController {
 
 	private static Logger logger = LoggerFactory.getLogger(UserRestController.class);
 
-	@Autowired
+//	@Autowired
 	UserService userService;
 
-	@Autowired
+//	@Autowired
 	Constants messages;
 
+	@Autowired
+	public UserRestController(UserService userService,Constants messages) {
+		this.userService = userService;
+		this.messages = messages;
+	}
 	/**
 	 * retrives single user
 	 * 

@@ -8,10 +8,14 @@
 * data.sql and schema.sql will be automatically populated during startup.
 * Swagger generated API doc can be accessed from [localhost:port/swagger-ui.html](localhost:8009/swagger-ui.html)
 
+
 ### Test
 * Technologies used - Spring Test, JUnit, REST Assured
 * Run *mvn install* or *mvn jacoco:report* will generate test coverage report in _target/site/jacoco/index.html_
 
+
+### Todo
+* For Simplicity, no security. We may add a basic http authentication later.
 
 
 ## Contributor

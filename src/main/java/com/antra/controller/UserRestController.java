@@ -1,7 +1,5 @@
 package com.antra.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 
@@ -34,10 +32,8 @@ public class UserRestController {
 
 	private static Logger logger = LoggerFactory.getLogger(UserRestController.class);
 
-//	@Autowired
 	UserService userService;
 
-//	@Autowired
 	Constants messages;
 
 	@Autowired

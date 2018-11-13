@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class UserRestStarter {
 
 	public static void main(String[] args) {
-		
 		SpringApplication.run(UserRestStarter.class, args);
 	}
 }

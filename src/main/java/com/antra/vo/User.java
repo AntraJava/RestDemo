@@ -10,7 +10,7 @@ public class User{
 	private Long id;
 
 	@NotNull
-    private String name;
+    private String name1;
      
     private Integer age;
      

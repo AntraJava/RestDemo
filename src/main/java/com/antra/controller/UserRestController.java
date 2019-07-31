@@ -46,8 +46,8 @@ public class UserRestController {
 	 * 
 	 **/
 	@ApiOperation(value = "gets a single user")
-	@RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
-	public ResponseEntity<User> getUser(@PathVariable("id") long id) throws UserException {
+	@RequestMapping(value = "/user/{uid}", method = RequestMethod.GET)
+	public ResponseEntity<User> getUser(@PathVariable("uid") long id) throws UserException {
 		User user = userService.findById(id);
 		if (user == null) {
 			throw new UserNotFoundException(messages.getMessage("USER_NOT_FOUND"));
@@ -59,7 +59,7 @@ public class UserRestController {
 	/**
 	 *  Get user by using pagination, if no parameters are provided, the first page with 10 records will be returned
 	 *
-	 * */
+	 **/
 	@ApiOperation(value = "get users accordingly")
 	@RequestMapping(value = "/user",  method = RequestMethod.GET)
 	public ResponseEntity<PagedResponse<User>> getUserPagenation(@RequestParam(required = false, defaultValue = "0") Integer pageNo,

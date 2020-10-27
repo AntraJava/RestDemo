@@ -1,8 +1,9 @@
 package com.antra.vo;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Objects;
 
 @XmlRootElement
 public class User{
@@ -11,7 +12,8 @@ public class User{
 
 	@NotNull
     private String name;
-     
+     @Max(100)
+	 @Min(10)
     private Integer age;
      
     private Double salary;

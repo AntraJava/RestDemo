@@ -1,19 +1,19 @@
 package com.antra.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.antra.dao.UserRepository;
 import com.antra.entity.UserEntity;
 import com.antra.util.UserEntityConverter;
 import com.antra.vo.PagedResponse;
+import com.antra.vo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.antra.vo.User;
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service("userService")
 public class UserServiceImpl implements UserService {
@@ -37,12 +37,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public User findById(long id) {
-		UserEntity userEntity = userRepo.findOne(id);
+		UserEntity userEntity = userRepo.findById(id).get();
 		return UserEntityConverter.convertEntityToUser(userEntity);
 	}
 
+	@Transactional
 	public User saveUser(User user) {
-		UserEntity userEntity =  userRepo.save(new UserEntity(user.getId(), user.getName(), user.getAge(), user.getSalary()));
+		UserEntity userEntity = userRepo.save(new UserEntity(user.getId(), user.getName(), user.getAge(), user.getSalary()));
 		return UserEntityConverter.convertEntityToUser(userEntity);
 	}
 
@@ -53,16 +54,16 @@ public class UserServiceImpl implements UserService {
 
 	public void deleteUserById(long id) {
 		//userRepo.findAll(new PageRequest(1,2));
-		userRepo.delete(id);
+		userRepo.deleteById(id);
 	}
 
 	public PagedResponse<User> findPaginated(int page, int size, String orderBy) {
 
 		Sort sort = null;
 		if (orderBy != null) {
-			sort = new Sort(Sort.Direction.ASC, orderBy);
+			sort = Sort.by(Sort.Direction.ASC, orderBy);
 		}
-		Page<UserEntity> page1 = userRepo.findAll(new PageRequest(page, size, sort));
+		Page<UserEntity> page1 = userRepo.findAll(PageRequest.of(page, size, sort));
 		List<UserEntity> list = page1.getContent();
 		PagedResponse<User> result = new PagedResponse<>();
 		result.setPage(page1.getNumber());

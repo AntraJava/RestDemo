@@ -1,29 +1,24 @@
 package com.antra.controller;
 
-import javax.validation.Valid;
-
-
+import com.antra.exception.UserException;
 import com.antra.exception.UserNotFoundException;
+import com.antra.service.UserService;
 import com.antra.util.Constants;
+import com.antra.vo.ErrorResponse;
 import com.antra.vo.PagedResponse;
 import com.antra.vo.ResponseMessage;
+import com.antra.vo.User;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-
-
-import com.antra.vo.User;
-import com.antra.service.UserService;
-import com.antra.vo.ErrorResponse;
-import com.antra.exception.UserException;
-
-import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/api")
@@ -47,7 +42,7 @@ public class UserRestController {
 	 **/
 	@ApiOperation(value = "gets a single user")
 	@RequestMapping(value = "/user/{uid}", method = RequestMethod.GET)
-	public ResponseEntity<User> getUser(@PathVariable("uid") long id) throws UserException {
+	public ResponseEntity<?> getUser(@PathVariable("uid") long id) throws UserException {
 		User user = userService.findById(id);
 		if (user == null) {
 			throw new UserNotFoundException(messages.getMessage("USER_NOT_FOUND"));
@@ -77,7 +72,7 @@ public class UserRestController {
 	/** create a user **/
 	@ApiOperation(value = "create a user")
 	@RequestMapping(value = "/user", method = RequestMethod.POST, consumes = "application/json")
-	public ResponseEntity<ResponseMessage> createUser(@Valid @RequestBody User user, UriComponentsBuilder ucBuilder) {
+	public ResponseEntity<ResponseMessage> createUser(@Validated @RequestBody User user, UriComponentsBuilder ucBuilder) {
 		User savedUser = userService.saveUser(user);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(ucBuilder.path("/api/user/{id}").buildAndExpand(user.getId()).toUri());
@@ -91,7 +86,6 @@ public class UserRestController {
 	@ApiOperation(value = "update a user")
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<User> updateUser(@PathVariable("id") long id, @RequestBody User user){
-
 		User currentUser = userService.findById(id);
 
 		if (currentUser == null) {
@@ -114,6 +108,7 @@ public class UserRestController {
 	@ApiOperation(value = "delete a user")
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<ResponseMessage> deleteUser(@PathVariable("id") long id) {
+
 		User user = userService.findById(id);
 		if (user == null) {
 			throw new UserNotFoundException(messages.getMessage("USER_NOT_FOUND"));
@@ -128,7 +123,7 @@ public class UserRestController {
 		error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		error.setMessage(ex.getMessage());
 		logger.error("Controller Error",ex);
-		return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(UserNotFoundException.class)

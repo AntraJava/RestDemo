@@ -1,10 +1,13 @@
 package com.antra.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class ResponseMessage {
     private String message;
+    @JsonProperty("data")
     private Object body;
 
     public ResponseMessage() {

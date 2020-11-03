@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public User findById(long id) {
-		UserEntity userEntity = userRepo.findById(id).get();
+		UserEntity userEntity = userRepo.findById(id).orElse(null);
 		return UserEntityConverter.convertEntityToUser(userEntity);
 	}
 

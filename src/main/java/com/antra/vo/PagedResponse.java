@@ -1,7 +1,8 @@
 package com.antra.vo;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
-
+@XmlRootElement
 public class PagedResponse<T> {
     private int page;
     private int rows;
@@ -9,6 +10,9 @@ public class PagedResponse<T> {
     private long totalElement;
     private String order;
     private List<T> body;
+
+    public PagedResponse() {
+    }
 
     public boolean isEmpty(){
         return body == null || body.isEmpty();

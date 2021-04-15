@@ -8,19 +8,15 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.*;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyObject;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 //@RunWith(SpringRunner.class)
 //@SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -41,7 +37,7 @@ public class UserAPIUnitTest {
 
     @Test
     public void testGetUserFromDB(){
-        Mockito.when(userService.findById(anyInt())).thenReturn(new User(1l,"test name", 20, 10000d));
+        Mockito.when(userService.findById(anyLong())).thenReturn(new User(1l,"test name", 20, 10000d));
         given().accept("application/json").get("/api/user/1").peek().
                 then().assertThat()
                 .statusCode(200)
@@ -61,11 +57,11 @@ public class UserAPIUnitTest {
     public void createUser(){
         User testUser = new User(null,"test name", 20, 10000d);
         User savedUser = new User(1l,"test name", 20, 10000d);
-        Mockito.when(userService.saveUser(anyObject())).thenReturn(savedUser);
+        Mockito.when(userService.saveUser(any())).thenReturn(savedUser);
         given().accept("application/json").contentType("application/json").body(testUser).post("/api/user").peek().
                 then().assertThat()
                 .statusCode(201)
-                .body("body.id",Matchers.is(1));
+                .body("data.id",Matchers.is(1));
     }
 
     @Test

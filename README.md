@@ -17,6 +17,7 @@
 ### Todo
 * For Simplicity, no security. We may add a basic http authentication later.
 * Jenkins integration / Email Notification  
+* Added Trigger for Jenkins
 
 ## Contributor
 [Manas](mailto:manas.gampa@antra.com)

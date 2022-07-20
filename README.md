@@ -20,6 +20,4 @@
 * Added Trigger for Jenkins
 
 ## Contributor
-[Manas](mailto:manas.gampa@antra.com)
-
-TestCICD
+[Manas](mailto:manas.gampa@antra.com) Dawei
